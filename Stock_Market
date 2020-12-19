@@ -1,0 +1,109 @@
+Sub Stock_Market():
+
+For Each ws In Worksheets
+    Dim LastRow As Long
+    Dim LastRow2 As Integer
+    Dim counter, ticker, i, Volume, MaxVolume As LongLong
+    Dim start, finish, MaxPercent, MinPercent As Double
+    Dim TickerName As String
+    counter = 1
+    start = 0
+    finish = 0
+    ticker = 1
+    Volume = 0
+        
+ 
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        ws.Range("I1").Value = "Ticker Symbol"
+        ws.Range("J1").Value = "Net Change for Year"
+        ws.Range("K1").Value = "Percent Change for Year"
+            For i = 2 To LastRow
+                If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+                      counter = counter + 1
+                    ws.Cells(counter, 9).Value = ws.Cells(i, 1).Value
+                      Volume = Volume + ws.Cells(i, 7).Value
+                    ws.Cells(counter, 12).Value = Volume
+                      finish = ws.Cells(i, 6).Value
+                    ws.Cells(counter, 10).Value = finish
+                      Volume = 0
+                Else
+                    Volume = Volume + ws.Cells(i, 7).Value
+                End If
+               
+                    If ws.Cells(i, 1).Value <> ws.Cells(i - 1, 1).Value Then
+                          ticker = ticker + 1
+                        start = ws.Cells(i, 3).Value
+                          ws.Cells(ticker, 8).Value = start
+                        ws.Cells(ticker, 11).Value = start
+  
+                        End If
+                        
+                            If start = 0 Then
+                              ws.Cells(counter, 10).Value = 0
+                                ws.Cells(ticker, 11).Value = 0
+                              ws.Cells(ticker, 8).Value = ""
+                            Else
+               
+                                If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+                                    ws.Cells(counter, 10).Value = ws.Cells(ticker, 10).Value - ws.Cells(counter, 8).Value
+                                      ws.Cells(ticker, 8).Value = ""
+                                    ws.Cells(ticker, 11).Value = ((start + ws.Cells(counter, 10).Value) / start) - 1
+                                      ws.Cells(ticker, 11).NumberFormat = "0.00%"
+                            
+                                End If
+ 
+                            End If
+               
+                                    If ws.Cells(ticker, 10).Value < 0 Then
+                                      ws.Cells(ticker, 10).Interior.ColorIndex = 3
+                                    Else
+                                      ws.Cells(ticker, 10).Interior.ColorIndex = 4
+               
+                                    End If
+                        If ws.Cells(ticker, 10).Value = 0 Then
+                            ws.Cells(ticker, 10).Interior.ColorIndex = 0
+                        End If
+            Next i
+        Next ws
+        'Bonus Section
+For Each ws In Worksheets
+    LastRow2 = ws.Cells(Rows.Count, 12).End(xlUp).Row
+    MaxVolume = 0
+    TickerName = 0
+    MaxPercent = 0
+    MinPercent = 0
+    ws.Range("L1").Value = "Total Stock Volume for Year"
+    ws.Cells(7, 14).Value = "Greatest Total Volume for Year"
+    ws.Cells(6, 14).Value = "Greatest % Decrease"
+    ws.Cells(5, 14).Value = "Greatest % Increase"
+    ws.Columns("I:L").AutoFit
+    ws.Range("O4").Value = "Ticker"
+    ws.Range("P4").Value = "Value"
+    
+        For i = 2 To LastRow2
+            If MaxVolume < ws.Cells(i, 12).Value Then
+                  MaxVolume = ws.Cells(i, 12).Value
+                TickerName = ws.Cells(i, 9).Value
+                  ws.Cells(7, 16).Value = MaxVolume
+                ws.Cells(7, 15).Value = TickerName
+            End If
+            
+                If MaxPercent < ws.Cells(i, 11).Value Then
+                      MaxPercent = ws.Cells(i, 11).Value
+                    TickerName = ws.Cells(i, 9).Value
+                      ws.Cells(5, 16).Value = MaxPercent
+                    ws.Cells(5, 15).Value = TickerName
+                      ws.Cells(5, 16).NumberFormat = "0.00%"
+                End If
+                
+                    If MinPercent > ws.Cells(i, 11).Value Then
+                          MinPercent = ws.Cells(i, 11).Value
+                        TickerName = ws.Cells(i, 9).Value
+                          ws.Cells(6, 16).Value = MinPercent
+                        ws.Cells(6, 15).Value = TickerName
+                          ws.Cells(6, 16).NumberFormat = "0.00%"
+                    End If
+        Next i
+    ws.Columns("N:P").AutoFit
+Next ws
+End Sub
